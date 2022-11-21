@@ -11,7 +11,7 @@
 #define ir5 3
 #define ir6 2
 
-int irValues[7],STOP = 5;
+int irValues[7],STOP = 1;
 
 void setup() 
 {
@@ -33,7 +33,7 @@ void setup()
 void loop()
 {
   readSensor(); /*Reads from IR sensors*/
-  printreading(); /*Print out the readings*/
+  printReading(); /*Print out the readings*/
   actuateMotor(); /*Run motor*/
   Serial.println(); /*Newline*/
 }
@@ -45,9 +45,40 @@ void readSensor(){
   irValues[4] = digitalRead(ir4);
   irValues[5] = digitalRead(ir5);
   irValues[6] = digitalRead(ir6);
+  if(
+     //1 - 110011
+    (irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 1) 
+    ||
+     //2 - 100111
+    (irValues[1] == 1 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) 
+    ||
+     //3 - 111001
+    (irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 1)
+    ||
+     //4 - 110111
+    (irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1)
+    ||
+     //5 - 111011
+    (irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 1)
+    ||
+     //6 - 101111
+    (irValues[1] == 1 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1)
+    ||
+     //7 - 111101
+    (irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 1) 
+    ){
+      // Invert the readings!
+     irValues[1] = !irValues[1];
+     irValues[2] = !irValues[2];
+     irValues[3] = !irValues[3];
+     irValues[4] = !irValues[4];
+     irValues[5] = !irValues[5];
+     irValues[6] = !irValues[6];
+  }
+  
 }
 
-void printreading(){
+void printReading(){
   Serial.print(
     String(irValues[1])
     +String(irValues[2])
@@ -63,46 +94,51 @@ void printreading(){
 
 void actuateMotor()
 {
-  //Group of 4
-  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //1 - 111100
+  //Group of 5
+  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 0) //1 - 111110
     left();         //1
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //2 - 001111
+  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //2 - 011111
     right();        //2
-  //Group of 3
-  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //3 - 011100
+  //Group of 4
+  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //3 - 111100
     left();         //3
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 0) //4 - 001110
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //4 - 001111
     right();        //4
-  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //5 - 111000
+  //Group of 3
+  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //5 - 011100
     left();         //5
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //6 - 000111
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 0) //6 - 001110
     right();        //6
-  //Group of 2
-  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //7 - 011000
+  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //7 - 111000
     left();         //7
-  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //8 - 110000
-    left();         //8
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 0) //9 - 000110
-    right();        //9
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 1) //10 - 000011
-    right();        //10
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //11 - 001100
-    forward();      //11
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //8 - 000111
+    right();        //8
+  //Group of 2
+  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //9 - 011000
+    left();         //9
+  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //10 - 110000
+    left();         //10
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 0) //11 - 000110
+    right();        //11
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 1) //12 - 000011
+    right();        //12
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //13 - 001100
+    forward();      //13
   //Group of 1
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //12 - 001000
-    forward();      //12
-  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //13 - 010000 
-    left();         //13
-  if(irValues[1] == 1 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //14 - 100000
-    left();         //14
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //15 - 000100
-    forward();      //15
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 0) //16 - 000010
-    right();        //1
-  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 1) //17 - 000001
-    right();        //17
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 1 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //14 - 001000
+    forward();      //14
+  if(irValues[1] == 0 && irValues[2] == 1 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //15 - 010000 
+    left();         //15
+  if(irValues[1] == 1 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 0) //16 - 100000
+    left();         //16
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 1 && irValues[5] == 0 && irValues[6] == 0) //17 - 000100
+    forward();      //17
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 1 && irValues[6] == 0) //18 - 000010
+    right();        //18
+  if(irValues[1] == 0 && irValues[2] == 0 && irValues[3] == 0 && irValues[4] == 0 && irValues[5] == 0 && irValues[6] == 1) //19 - 000001
+    right();        //19
   //All of 1
-  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //18 - 111111
+  if(irValues[1] == 1 && irValues[2] == 1 && irValues[3] == 1 && irValues[4] == 1 && irValues[5] == 1 && irValues[6] == 1) //20 - 111111
   {
     if(STOP > 0){
       forward();
@@ -116,7 +152,7 @@ void actuateMotor()
       fullstop();
     }
   }
-  else{Serial.print("LOST-TRAIL!");}
+  // Superloop ends!
 }
 
 void forward(){
