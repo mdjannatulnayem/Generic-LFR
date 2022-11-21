@@ -11,7 +11,7 @@
 #define ir5 3
 #define ir6 2
 
-int irValues[7],STOP = 1;
+int irValues[7],STOP = 4;
 
 void setup() 
 {
@@ -102,12 +102,14 @@ void actuateMotor()
   diff = lft - rgt;
   summ = lft + rgt;
   
-  if(diff == 0) forward();
-  if((diff == 1 && irValues[1]) == 1 || (diff == -1 && irValues[4] == 1))
+  if((diff == 1 && irValues[3]) == 1 || (diff == -1 && irValues[4] == 1))
     forward();
-  else if(diff < 0) left();
-  else if(diff > 0) right();
-  else if(summ == 6)
+  else if(diff > 0) left();
+  else if(diff < 0) right();
+  else if(irValues[3] && irValues[4] && summ != 6)
+    forward();
+  else{/*No activity*/}
+  if(summ == 6)
   {
     if(STOP > 0){
       forward();
@@ -121,7 +123,6 @@ void actuateMotor()
       fullstop();
     }
   }
-  else{/*No activity*/}
   // Superloop ends!
 }
 
