@@ -94,17 +94,33 @@ void printReading(){
 
 void actuateMotor()
 {
-  int lft,rgt,diff;
+  int lft,rgt,diff,summ;
   
   lft = irValues[1] + irValues[2] + irValues[3];
   rgt = irValues[4] + irValues[5] + irValues[6];
+  
   diff = lft - rgt;
+  summ = lft + rgt;
   
   if(diff == 0) forward();
   if((diff == 1 && irValues[1]) == 1 || (diff == -1 && irValues[4] == 1))
     forward();
   else if(diff < 0) left();
   else if(diff > 0) right();
+  else if(summ == 6)
+  {
+    if(STOP > 0){
+      forward();
+      delayMicroseconds(100000);
+      readSensor();
+      if(irValues[1] == 0 || irValues[2] == 0 || irValues[3] == 0 || irValues[4] == 0 || irValues[5] == 0 || irValues[6] == 0) {
+        STOP -= 1;
+      }
+    }
+    else{
+      fullstop();
+    }
+  }
   else{/*No activity*/}
   // Superloop ends!
 }
